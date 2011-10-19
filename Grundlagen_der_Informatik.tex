@@ -114,6 +114,8 @@ Laufzeiten lassen sich in verschiedene Komplexitätsklassen (vgl. Landau-Symbole
 \begin{equation}O(n) \quad\mbox{= linear}\end{equation}
 \begin{equation}O(n^2) \quad\mbox{= quadratisch}\end{equation}
 \begin{equation}O(2^n) \quad\mbox{= exponentiell}\end{equation}
+\begin{equation}O(n log(n)) \quad\mbox{= logarithmisch}\end{equation}
+
 \newpage
 \section{Darstellung von Werten}
 Es gibt verschiedene Möglichkeiten, Werte zu repräsentieren, so zum Beispiel:
@@ -124,7 +126,7 @@ Das dezimale Zahlensystem ist ein System mit der Basis 10 und ist ein so genannt
 \begin{equation}\begin{tabular}{c c c c}
 Ziffer & Position & Gewichtung & Exponent \\
 \hline
-1 & Zehntausender & 1000 & $10^4$ \\
+1 & Zehntausender & 10000 & $10^4$ \\
 3 & Tausender &  1000 & $10^3$ \\
 4 & Hunderter & 100 & $10^2$ \\
 0 & Zehner & 10 & $10^1$ \\
@@ -297,5 +299,14 @@ WIr brauchen eine Methode, wie wir eine binäre Zahl darstellen können und dies
 Wir zeigen die Addition wie folgt:
 \begin{equation}\frac{\mbox{Test\\test}}{}\end{equation}
 \subsection{Subtraktion}
+\begin{mydef}\begin{quote}$a - b := a \oplus K2(b)$\end{quote}\end{mydef}
 
+\begin{myexample}\begin{tabular}{c c c c c}
+\underline{unsigned} & & \underline{computer code} & & \underline{signed} \\
+$\frac{12,15}{27}$ & $\leftarrow$ & $\begin{tabular}{c} 1000 \\ +1111 \\ \hline  0111  \\ \end{tabular} $ & $\overrightarrow{overflow}$ & $\begin{tabular}{c} -4 \\
++(-1) \\ \hline
+-5 \\
+\end{tabular} $ \\
+$\not= 11$ & $\leftarrow$ & $\underline{0111} $ & $\rightarrow$ & $-5$ \\
+\end{tabular}\end{myexample}
 \end{document}
