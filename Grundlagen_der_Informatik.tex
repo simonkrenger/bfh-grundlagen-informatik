@@ -297,8 +297,23 @@ WIr brauchen eine Methode, wie wir eine binäre Zahl darstellen können und dies
 &=&1110 \oplus 1 = (1110 + 0001) \mod 2^4 \nonumber \\
 &=&1111_2 = 15_{10}\end{eqnarray}\end{myexample}
 \subsection{Addition}
-Wir zeigen die Addition wie folgt:
-\begin{equation}\frac{\mbox{Test\\test}}{}\end{equation}
+Die binäre Addition beruht auf der folgenden Wahrheitswerttabelle, wenn wir zwei Bits $a_n$ und $b_n$ addieren:
+\begin{center}\begin{tabular}{c c | c c}
+$a_n$ & $b_n$ & Summe & $c_{n+1}$ \\ \hline
+0 & 0 & 0 & 0 \\
+0 & 1 & 1 & 0 \\
+1 & 0 & 1 & 0 \\
+1 & 1 & 0 & 1\end{tabular}\end{center}
+Das Carry-Bit ($c_n$) wird dann zur nächsten Bit-Addition "mitgenommen". 
+\begin{myexample}Wir zeigen die Addition an den folgenden Beispielen:
+\begin{enumerate}
+\item $6_{10}$ + $10_{10}$ = $16_{10}$\begin{center}\begin{tabular}{ccccccc}
+& $0$ & $0$ & $0$ & $1$ & $1$ & $0$ \\
++ & $0$ & $0_1$ & $1_1$ & $0_1$ & $1$ & $0$ \\ \hline
+& $0$ & $1$ & $0$ & $0$ & $0$ & $0$ \\ \hline \hline
+\end{tabular}\end{center}
+\end{enumerate}
+\end{myexample}
 \subsection{Subtraktion}
 \begin{mydef}\begin{quote}$a - b := a \oplus K2(b)$\end{quote}\end{mydef}
 
@@ -312,9 +327,29 @@ $\not= 11$ & $\leftarrow$ & $\underline{0111} $ & $\rightarrow$ & $-5$ \\
 \end{tabular}\end{myexample}
 \section{Flags}
 \subsection{Carry- und Overflowflag}
-%TODO: Tabelle Carry- und Overflowflag
+Um zu wissen, ob das angezeigte Resultat aus der vorhergegangenen Rechnung korrekt war, setzt der Prozessor sogenannte Flags. Hier soll nun das Carry-Flag und das Overflow-Flag besprochen werden.
+\\\\
+Das \underline{Carry-Flag} wird gesetzt, wenn das Resultat einer unsigned Rechnung nicht stimmt, d.h. wenn das korrekte Resultat grösser der maximal darstellbaren Zahl ist ($2^n-1$, wobei $n$ Anzahl der Bits ist) oder unter 0 fällt.
+\\\\
+Das \underline{Overflow-Flag} wird gesetzt, wenn bei einer arithmetischen Operation mit signed-Zahlen das Resultat entweder keiner der minimal darstellbaren Zahl ($< -(2^{n-1})$) ist oder grösser der maximal darstellbaren Zahl (> $2^{n-1}-1$) ist.
+
+Allgemein stellen wir eine Addition wie folgt dar:
+\begin{center}\begin{tabular}{ccccccc}
+& $a_n$ & $a_{n-1}$ & $...$ & $a_2$ & $a_1$ & $a_0$ \\
++ & $b_n$ & $b_{n-1}$ & $...$ & $b_2$ & $b_1$ & $b_0$ \\ \hline
+$c_{n+1}$ & $c_n$ & $c_{n-1}$ & $...$ & $c_2$ & $c_1$ & $c_0$
+\end{tabular}\end{center}
+Nun finden wir für das Carry-Flag, bzw. das Overflow-Flag folgende Regeln:
+\begin{center}
+\begin{tabular}{c|c|c|}
+& Addition & Subtraktion \\ \hline
+Carry-Flag & $C_{n+1}$ & $\lnot C_{n+1}$ \\ \hline
+Overflow-Flag & \multicolumn{2}{|c|}{$(a_n \land b_n \land \lnot c_n) \lor (\lnot a \land \lnot b_n \land c_n)$} \\ \hline
+\end{tabular}
+\end{center}
+Es ist wichtig zu verstehen, dass der Prozessor keinen Unterschied von unsigned und signed representation macht. Die Flags werden bei jeder Berechnung des Prozessors gesetzt. Das ausgeführte Programm muss dann die Flags beachten und entsprechend handhaben.
 \chapter{Digitaltechnik}
-%TODO: Moorsches Gesetz
+Das \underline{Moorsche Gesetz} besagt, dass sich die Komplexität (= Anzahl Transistoren) integrierter Schaltkreise regelmässig verdoppelt. Je nach Quelle werden 18 oder 24 Monate als Zeitraum genannt.
 \section{Produktion}
 %TODO: Produktion
 \section{Transistor}
@@ -322,20 +357,58 @@ $\not= 11$ & $\leftarrow$ & $\underline{0111} $ & $\rightarrow$ & $-5$ \\
 \section{Gatter}
 %TODO: Kurze Uebersicht zu den Gattern
 \section{Flipflop}
-%TODO: RS-Flipflop
+%TODO: RS-Flipflop, Content: Schaltung, 
 \section{Arithmetische Schaltungen}
 \subsection{Halbaddierer}
-% http://tams-www.informatik.uni-hamburg.de/applets/hades/webdemos/20-arithmetic/10-adders/halfadd-fulladd.html
+% http://tams-www.informatik.uni-hamburg.de/applets/hades/webdemos/20-arithmetic/10adders/halfadd-fulladd.html
+Ein Halbaddierer ist eine einfache logische Schaltung, mit welcher sich zwei Bits addieren lassen. Neben dem Resultat wird das Carry-Bit ausgegeben.
+%TODO: BIld
+\begin{center}\begin{tabular}{c c | c c}
+$a_n$ & $b_n$ & Summe & $c_{n+1}$ \\ \hline
+0 & 0 & 0 & 0 \\
+0 & 1 & 1 & 0 \\
+1 & 0 & 1 & 0 \\
+1 & 1 & 0 & 1\end{tabular}\end{center}
+Aus dieser Wahrheitswerttabelle können wir folgende boolsche Gleichungen herleiten:
+\begin{eqnarray}
+\mbox{Summe} & = & (a_n \land \lnot b_n) \lor (\lnot a \land b_n) \quad \mbox{(XOR)} \\
+c_{n+1} & = & a_n \land b_n\end{eqnarray}
 \subsection{Volladdierer}
 % http://tams-www.informatik.uni-hamburg.de/applets/hades/webdemos/20-arithmetic/10-adders/halfadd-fulladd.html
+
+Grundsätzlich handelt es sich beim Volladdierer um einen Halbaddierer, welcher das Carry-Bit der vorhergegangenen Addition ebenfalls in die Rechnung mit einbezieht. Statt zwei Eingänge haben wir nun drei Eingänge (nämlich $a$, $b$ und das Carry-Bit $c$).
+
+%TODO: Bild
+%TODO: Boolsche Gleichung
+\begin{center}\begin{tabular}{c c c | c c}
+$a_n$ & $b_n$ & $c_n$ & Summe & $c_{n+1}$ \\ \hline
+0 & 0 & 0 & 0 & 0\\
+0 & 0 & 1 & 1 & 0\\
+0 & 1 & 0 & 1 & 0\\
+0 & 1 & 1 & 0 & 1\\
+1 & 0 & 0 & 1 & 0\\
+1 & 0 & 1 & 0 & 1\\
+1 & 1 & 0 & 0 & 1\\
+1 & 1 & 1 & 1 & 1\\
+\end{tabular}\end{center}
 \subsection{Implementation Einfache ALU}
 %TODO: http://tams-www.informatik.uni-hamburg.de/applets/hades/webdemos/20-arithmetic/40-addsub/add-sub.html
 \section{Memory (Speicher)}
 %TODO: Unterschied SRAM / DRAM
 \subsection{Multiplexer}
+Ein Multiplexer dient dazu, von einer beliebigen Anzahl Eingänge genau einen an den Ausgang weiter zu schalten. D.h. mittels der Addresseingänge können wir bestimmen, welcher Eingang an den Ausgang weitergegeben werden kann.
+\subsection{Adress-Decoder}
+Mit einem Adress-Decoder kann eine bestimmte Leitung am Adress-Decoder aktiv geschaltet werden. Über die Adresseingänge ($A_1 ... A_n$) können wir bestimmen, welcher Ausgang (bei 4 Adressbits $2^4$ = 16 Ausgänge) auf aktiv geschaltet wird.
+\\\\
+Im Folgenden die Wahrheitswerttabelle für einen 2:4 Adress-Decoder:
+\begin{center}\begin{tabular}{c c | c c c c}
+$A_1$ & $A_0$ & $O_3$ & $O_2$ & $O_1$ & $O_0$ \\ \hline
+0 & 0 & 0 & 0 & 0 & 1\\
+0 & 1 & 0 & 0 & 1 & 0\\
+1 & 0 & 0 & 1 & 0 & 0\\
+1 & 1 & 1 & 0 & 0 & 0\end{tabular}\end{center}
+\subsection{Read Only Memory (ROM)}
 
-\subsection{Random Access Memory}
-
-\subsection{Read Only Memory}
+\subsection{Random Access Memory (RAM)}
 
 \end{document}
