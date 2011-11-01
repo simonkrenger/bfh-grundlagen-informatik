@@ -440,7 +440,6 @@ Analysieren wir die Schaltung, so erkennen wir die zwei Betriebsmodi:
 \end{itemize}
 Diese ALU lässt sich um beliebig viele Bits erweitern. Dazu werden intern lediglich zusätzliche Volladdierer kaskadiert.
 \newpage\section{Memory (Speicher)}
-%TODO: Unterschied SRAM / DRAM
 \subsection{Multiplexer}
 Ein Multiplexer dient dazu, von einer beliebigen Anzahl Eingänge genau einen an den Ausgang weiter zu schalten. D.h. mittels der Addresseingänge können wir bestimmen, welcher Eingang an den Ausgang weitergegeben werden kann.
 \subsection{Adress-Decoder}
@@ -455,7 +454,24 @@ $A_1$ & $A_0$ & $O_3$ & $O_2$ & $O_1$ & $O_0$ \\ \hline
 1 & 1 & 1 & 0 & 0 & 0\end{tabular}\end{center}
 Adress-Decoder setzen wir beispielsweise bei Speicherbausteinen ein, damit wir eine Zeile oder Spalte des Speichers auswählen können.
 \subsection{Read Only Memory (ROM)}
+Ein ROM ist ein "nur-lesbarer" Speicher. Dies bedeutet, dass wir von Aussen lediglich bestimmen können, welche Stelle des Speichers wir abfragen wollen.
 
+Folgende Schaltung zeigt ein ROM, welches 16 8-Bit-Werte speichern kann (also 16 Byte).
+\begin{center}\includegraphics[scale=0.25]{img/rom.png}\end{center}
+Um die Funktion zu verstehen, analysieren wir die Elemente des ROMs:
+\begin{itemize}
+\item Der \underline{Adress-Decoder} decodiert die Adresse, welche an den Eingängen $A_0$ bis $A_3$ angelegt ist und setzt die entsprechende Zeile der Speicher-Matrix auf 1.
+\item Die \underline{Speicher-Matrix} besteht aus 16 Zeilen mit jeweils 8 Stellen. Eine Stelle kann entweder leer sein (keine Sicherung, "fuse") oder mit einer Sicherung belegt sein. Wenn an einer Stelle eine Sicherung ist, wird die dazugehörige Spalte auf 0 gesetzt sobald die Zeile auf 1 gesetzt wird. Intern wird dies durch einen Transistor realisiert, welcher die Spalte auf Null-Potential zieht.
+\item Die \underline{Ausgabe-Gatter} invertieren nun den Wert der Zeilen und geben diese am Ausgang des ROMs aus.
+\end{itemize}
+Die Sicherungen werden bei der Herstellung des ROMs gesetzt und können nicht nachträglich geändert werden. Solche ROMs werden heute nur noch selten eingesetzt und wurden durch PROM (Programmable ROM), EPROM (Erasable Programmable ROM) oder EEPROM (Electrically Erasable Programmable ROM) ersetzt.
 \subsection{Random Access Memory (RAM)}
-
+Generell können wir bei RAM zwischen zwei verschiedenen RAM-Arten unterscheiden:
+\begin{itemize}
+\item \underline{Statisches RAM (SRAM)}: Statisches RAM wird mit Transistoren (Latches) realisiert. Dies bedeutet, statisches RAM ist sehr schnell, allerdings auch relativ teuer und benötigt im Gegensatz zum dynamischen RAM auch relativ viel Platz.
+\item \underline{Dynamisches RAM (DRAM)}: Dieser Typ von RAM ist mit Kondensatoren und wenigen Transistoren aufgebaut. Die Information wird als elektrische Ladung im Kondensator gespeichert. Jeder Kondensator speichert ein Bit. Vorteilig bei diesem RAM-Typ sind die tiefen Produktionskosten und die grosse Dichte die erreicht werden kann. Allerdings ist das dynamische RAM im Vergleich zum statischen RAM relativ langsam und erfordert wegen der Leckströme einen regelmässigen Refresh der Speicherzellen. Bei modernen DRAM ist diese Refresh-Funktionalität allerdings im DRAM eingebaut.
+\end{itemize}
+%TODO
+\begin{center}\includegraphics[scale=0.2]{img/ram.png}\end{center}
+%TODO
 \end{document}
