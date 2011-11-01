@@ -350,36 +350,71 @@ Overflow-Flag & \multicolumn{2}{|c|}{$(a_n \land b_n \land \lnot c_n) \lor (\lno
 Es ist wichtig zu verstehen, dass der Prozessor keinen Unterschied von unsigned und signed representation macht. Die Flags werden bei jeder Berechnung des Prozessors gesetzt. Das ausgeführte Programm muss dann die Flags beachten und entsprechend handhaben.
 \chapter{Digitaltechnik}
 Das \underline{Moorsche Gesetz} besagt, dass sich die Komplexität (= Anzahl Transistoren) integrierter Schaltkreise regelmässig verdoppelt. Je nach Quelle werden 18 oder 24 Monate als Zeitraum genannt.
-\section{Produktion}
-%TODO: Produktion
 \section{Transistor}
-%TODO: Einführung Transistor
+Ein Transistor ist ein elektronisches Bauelement, bei welchem mittels einem Steuerstrom ein grösserer Strom gesteuert werden kann. Ein Transistor wird in der Elektronik mit folgendem Symbol dargestellt (Ströme und Spannungen eingezeichnet):
+\begin{center}\includegraphics[scale=0.4]{img/transistor.png}\end{center}
+Grundlegend funktioniert der Transistor folgendermassen:\\
+Ohne angelegte Spannung ist die Strecke Kollektor-Emitter (oben nach unten) elektrisch isolierend (Widerstand $R_{CE} = \infty \Omega$), d.h. es kann kein Strom fliessen ($I_c = 0$).
+\\\\Wird nun an der Basis (links) eine Spannung von (ungefähr) $U_{BE} =0.7V$ angelegt, so fliesst ein Basisstrom ($I_B$) und die Kollektor-Emitter-Strecke wird elektrisch leitend ($R_{CE} < \infty \Omega$). Somit lässt sich über einen kleinen Basisstrom ein grosser Strom steuern.
 \section{Gatter}
-%TODO: Kurze Uebersicht zu den Gattern
-\section{Flipflop}
-%TODO: RS-Flipflop, Content: Schaltung, 
+Unter einem \underline{Gatter} verstehen wir in der Digitaltechnik ein Element, dass eine bestimmte logische Operation durchführen kann. Diese Elemente können alle mit Transistoren realisiert werden. Die Operationen kennen wir aus der Logik, die Symbole entnehmen wir der folgenden Tabelle:
+\begin{center}\begin{tabular}{c c c c}
+Funktion & IEC-Symbol & ANSI-Symbol & Boolsche Formel \\ \hline
+AND & \includegraphics[scale=0.2]{img/gatter_IEC_AND.png} & \includegraphics[scale=0.2]{img/gatter_ANSI_AND.png} &  $Y = A \land B$ \\
+OR & \includegraphics[scale=0.2]{img/gatter_IEC_OR.png} & \includegraphics[scale=0.2]{img/gatter_ANSI_OR.png} &  $Y = A \lor B$ \\
+NOT & \includegraphics[scale=0.2]{img/gatter_IEC_NOT.png} & \includegraphics[scale=0.2]{img/gatter_ANSI_NOT.png} &  $Y = \lnot A$ \\
+NAND & \includegraphics[scale=0.2]{img/gatter_IEC_NAND.png} & \includegraphics[scale=0.2]{img/gatter_ANSI_NAND.png} &  $Y = \lnot (A \land B)$ \\
+XOR & \includegraphics[scale=0.2]{img/gatter_IEC_XOR.png} & \includegraphics[scale=0.2]{img/gatter_ANSI_XOR.png} &  $Y = A \veebar B$
+\end{tabular}\end{center}
+Für jedes Gatter kennen wir drei verschiedene Repräsentationen:
+\begin{itemize}
+\item Schaltbild
+\item Boolsche Formel
+\item Wahrheitswerttabelle
+\end{itemize}
+\section{RS-Flipflop}
+Ein RS-Flipflop (auch Latch genannt) ist eine logische Schaltung, mit welcher sich 1 Bit speichern lässt. Der Teil "RS" des Namens bezieht sich auf die Eingänge S (="Set") und R (="Reset"). Das die folgende Schaltung zeigt den Aufbaum eines RS-Flipflops mit NOR-Gattern:
+\begin{center}\includegraphics[scale=0.25]{img/sr-flipflop.png}\end{center}
+Wie oben bereits definiert, speichert ein RS-Flipflop ein Bit, dabei gibt es gemäss der Logik bei zwei Eingängen vier verschiedene Zustände des Flipflops:
+\begin{center}\begin{tabular}{c c | c c}
+$S$ & $R$ & Q & $\lnot Q$ \\ \hline
+0 & 0 & Q* & $\lnot Q*$\\
+0 & 1 & 0 & 1 \\
+1 & 0 & 1 & 0 \\
+1 & 1 & - & -\end{tabular}\end{center}
+Wenn wir das RS-Flipflop genauer untersuchen, so erkennen wir vier verschiedene Zustände:
+\begin{itemize}\item \underline{$S=0$ und $R=0$}: In diesem Zustand zeigen die Ausgänge den gespeicherten Wert des Flipflops an, es gibt keine Veränderung der Ausgangswerte.
+\item \underline{$S=1$ und $R=0$}: In diesem Zustand wird das Flipflop, bzw. der Ausgang $Q$ des Flipflops auf 1 gesetzt. Der Ausgang $\lnot Q$ entspreched auf 0.
+\item \underline{$S=0$ und $R=1$}: In diesem Zustand wird das Flipflop auf 0 gesetzt. Das bedeutet, dass der Ausgang $Q$ auf 0 gesetzt wird.
+\item \underline{$S=1$ und $R=1$}: Illegaler (nicht definierter) Zustand, da es hier eine Race-Condition gibt. \end{itemize}
+RS-Flipflops werden beispielsweise bei statischen RAM (SRAM) eingesetzt, da sie sehr schnell sind. Bei einer CPU werden solche Latches beispielsweise für den internen Cache oder die Register eingesetzt.
 \section{Arithmetische Schaltungen}
 \subsection{Halbaddierer}
 % http://tams-www.informatik.uni-hamburg.de/applets/hades/webdemos/20-arithmetic/10adders/halfadd-fulladd.html
-Ein Halbaddierer ist eine einfache logische Schaltung, mit welcher sich zwei Bits addieren lassen. Neben dem Resultat wird das Carry-Bit ausgegeben.
-%TODO: BIld
+Ein Halbaddierer ist eine einfache logische Schaltung, mit welcher sich zwei Bits addieren lassen. Neben dem Resultat wird das Carry-Bit ausgegeben. Das Schaltbild für den Halbaddierer sieht folgendermassen aus:
+\begin{center}\includegraphics[scale=0.3]{img/half-adder.png}\end{center}
+Für die zwei Eingänge und zwei Ausgänge erstellen wir eine Wahrheitswerttabelle:
 \begin{center}\begin{tabular}{c c | c c}
 $a_n$ & $b_n$ & Summe & $c_{n+1}$ \\ \hline
 0 & 0 & 0 & 0 \\
 0 & 1 & 1 & 0 \\
 1 & 0 & 1 & 0 \\
 1 & 1 & 0 & 1\end{tabular}\end{center}
-Aus dieser Wahrheitswerttabelle können wir folgende boolsche Gleichungen herleiten:
+Aus dieser Wahrheitswerttabelle können wir folgende boolsche Formeln herleiten:
 \begin{eqnarray}
-\mbox{Summe} & = & (a_n \land \lnot b_n) \lor (\lnot a \land b_n) \quad \mbox{(XOR)} \\
-c_{n+1} & = & a_n \land b_n\end{eqnarray}
+S & = & (a_n \land \lnot b_n) \lor (\lnot a \land b_n) = a \veebar b \\
+COUT & = & a_n \land b_n\end{eqnarray}
 \subsection{Volladdierer}
 % http://tams-www.informatik.uni-hamburg.de/applets/hades/webdemos/20-arithmetic/10-adders/halfadd-fulladd.html
-
 Grundsätzlich handelt es sich beim Volladdierer um einen Halbaddierer, welcher das Carry-Bit der vorhergegangenen Addition ebenfalls in die Rechnung mit einbezieht. Statt zwei Eingänge haben wir nun drei Eingänge (nämlich $a$, $b$ und das Carry-Bit $c$).
+\begin{center}\includegraphics[scale=0.3]{img/full-adder.png}\end{center}
+Wie sehen dank dieser Implementation sofort, dass der Summen-Ausgang ($S$) nur gesetzt wird, wenn lediglich einer der Eingänge auf 1 gesetzt ist. Das Carry-Bit wiederum wird gesetzt, sobald mindestens zwei Eingänge auf 1 gesetzt sind.
 
-%TODO: Bild
-%TODO: Boolsche Gleichung
+Die Schaltung lässt sich zu folgenden booleschen Formeln umwandeln:
+\begin{eqnarray}
+S & = & (A \veebar B) \veebar CIN \\
+COUT & = & (A \land B) \lor (B \land CIN) \lor (A \land CIN)\end{eqnarray}
+Daraus können wir nun die Wahrheitswerttabelle für den Volladdierer erstellen:
 \begin{center}\begin{tabular}{c c c | c c}
 $a_n$ & $b_n$ & $c_n$ & Summe & $c_{n+1}$ \\ \hline
 0 & 0 & 0 & 0 & 0\\
@@ -391,9 +426,20 @@ $a_n$ & $b_n$ & $c_n$ & Summe & $c_{n+1}$ \\ \hline
 1 & 1 & 0 & 0 & 1\\
 1 & 1 & 1 & 1 & 1\\
 \end{tabular}\end{center}
-\subsection{Implementation Einfache ALU}
+Bei einer ALU (Arithmetic Logic Unit) werden mehrere Volladdierer hintereinander geschaltet, um zwei binäre Zahlen zusammenzurechnen.
+\newpage\subsection{Implementation Einfache ALU}
 %TODO: http://tams-www.informatik.uni-hamburg.de/applets/hades/webdemos/20-arithmetic/40-addsub/add-sub.html
-\section{Memory (Speicher)}
+Um einen 4-Bit Addierer/Subtrahierer zu realisieren, kaskadieren wir vier Volladdierer:
+\begin{center}\includegraphics[scale=0.2]{img/four-full-adders.png}\end{center}
+Diese Schaltung abstrahieren wir dann zu einem ALU-Baustein, welcher im folgenden Schema als "83" dargestellt ist:
+\begin{center}\includegraphics[scale=0.2]{img/four-bit-alu.png}\end{center}
+Analysieren wir die Schaltung, so erkennen wir die zwei Betriebsmodi:
+\begin{itemize}
+\item \underline{Addition}, wenn das "SUB/nADD"-Bit = 0 ist. Dann werden beide 4-Bit-Werte unverändert an die ALU weitergegeben. Das Carry-Flag der gesamten Schaltung (COUT) wird analog dem Carry-Bit der ALU (COUT) gesetzt.
+\item \underline{Subtraktion}, wenn das "SUB/nADD"-Bit = 1 ist. Sobald das Bit gesetzt ist, wird die zweite Zahl ($B_n$) invertiert und das CIN-Bit der ALU auf 1 gesetzt. Zusätzlich wird das COUT-Flag invertiert gesetzt, d.h. wenn ein Carry-Bit gesetzt ist, so wird das Carry-Flag nicht gesetzt und umgekehrt.
+\end{itemize}
+Diese ALU lässt sich um beliebig viele Bits erweitern. Dazu werden intern lediglich zusätzliche Volladdierer kaskadiert.
+\newpage\section{Memory (Speicher)}
 %TODO: Unterschied SRAM / DRAM
 \subsection{Multiplexer}
 Ein Multiplexer dient dazu, von einer beliebigen Anzahl Eingänge genau einen an den Ausgang weiter zu schalten. D.h. mittels der Addresseingänge können wir bestimmen, welcher Eingang an den Ausgang weitergegeben werden kann.
@@ -407,6 +453,7 @@ $A_1$ & $A_0$ & $O_3$ & $O_2$ & $O_1$ & $O_0$ \\ \hline
 0 & 1 & 0 & 0 & 1 & 0\\
 1 & 0 & 0 & 1 & 0 & 0\\
 1 & 1 & 1 & 0 & 0 & 0\end{tabular}\end{center}
+Adress-Decoder setzen wir beispielsweise bei Speicherbausteinen ein, damit wir eine Zeile oder Spalte des Speichers auswählen können.
 \subsection{Read Only Memory (ROM)}
 
 \subsection{Random Access Memory (RAM)}
