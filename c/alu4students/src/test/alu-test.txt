@@ -1,0 +1,36 @@
+reset
+add ff ff
+add 80 80
+add 40 40
+add 00 00
+add 81 81
+add 41 41
+sub ff 00
+sub 00 ff
+sub ff ff
+sub 00 00
+sub 40 41
+sub 41 40
+sub 30 50
+sub 00 41
+sub 80 81
+sub 81 81
+sub 80 80
+neg_a ff
+neg_a 00
+neg_b 00
+neg_b ff
+neg_b 80
+
+or aa aa
+or ff 00
+or 00 ff
+and aa ff
+and 55 ff
+and aa 55
+xor 00 00
+xor ff ff
+xor af fa
+not_b ff
+not_a 00
+not_a f0

@@ -1,0 +1,323 @@
+reset 
+Register A:   00000000
+Register B:   00000000
+Accumulator:  00000000
+Carryflag:    0
+Signflag:     0
+Zeroflag:     0
+Overflowflag: 0
+***********************
+add ff ff
+Register A:   11111111
+Register B:   11111111
+Accumulator:  11111110
+Carryflag:    1
+Signflag:     1
+Zeroflag:     0
+Overflowflag: 0
+***********************
+add 80 80
+Register A:   10000000
+Register B:   10000000
+Accumulator:  00000000
+Carryflag:    1
+Signflag:     0
+Zeroflag:     1
+Overflowflag: 1
+***********************
+add 40 40
+Register A:   01000000
+Register B:   01000000
+Accumulator:  10000000
+Carryflag:    0
+Signflag:     1
+Zeroflag:     0
+Overflowflag: 1
+***********************
+add 00 00
+Register A:   00000000
+Register B:   00000000
+Accumulator:  00000000
+Carryflag:    0
+Signflag:     0
+Zeroflag:     1
+Overflowflag: 0
+***********************
+add 81 81
+Register A:   10000001
+Register B:   10000001
+Accumulator:  00000010
+Carryflag:    1
+Signflag:     0
+Zeroflag:     0
+Overflowflag: 1
+***********************
+add 41 41
+Register A:   01000001
+Register B:   01000001
+Accumulator:  10000010
+Carryflag:    0
+Signflag:     1
+Zeroflag:     0
+Overflowflag: 1
+***********************
+sub ff 00
+Register A:   11111111
+Register B:   00000000
+Accumulator:  00000000
+Carryflag:    0
+Signflag:     0
+Zeroflag:     1
+Overflowflag: 0
+***********************
+sub 00 ff
+Register A:   00000000
+Register B:   00000001
+Accumulator:  00000001
+Carryflag:    1
+Signflag:     0
+Zeroflag:     0
+Overflowflag: 0
+***********************
+sub ff ff
+Register A:   11111111
+Register B:   00000001
+Accumulator:  00000000
+Carryflag:    0
+Signflag:     0
+Zeroflag:     1
+Overflowflag: 0
+***********************
+sub 00 00
+Register A:   00000000
+Register B:   00000000
+Accumulator:  00000001
+Carryflag:    1
+Signflag:     0
+Zeroflag:     0
+Overflowflag: 0
+***********************
+sub 40 41
+Register A:   01000000
+Register B:   10111111
+Accumulator:  11111111
+Carryflag:    1
+Signflag:     1
+Zeroflag:     0
+Overflowflag: 0
+***********************
+sub 41 40
+Register A:   01000001
+Register B:   11000000
+Accumulator:  00000001
+Carryflag:    0
+Signflag:     0
+Zeroflag:     0
+Overflowflag: 0
+***********************
+sub 30 50
+Register A:   00110000
+Register B:   10110000
+Accumulator:  11100000
+Carryflag:    1
+Signflag:     1
+Zeroflag:     0
+Overflowflag: 0
+***********************
+sub 00 41
+Register A:   00000000
+Register B:   10111111
+Accumulator:  10111111
+Carryflag:    1
+Signflag:     1
+Zeroflag:     0
+Overflowflag: 0
+***********************
+sub 80 81
+Register A:   10000000
+Register B:   01111111
+Accumulator:  11111111
+Carryflag:    1
+Signflag:     1
+Zeroflag:     0
+Overflowflag: 0
+***********************
+sub 81 81
+Register A:   10000001
+Register B:   01111111
+Accumulator:  00000000
+Carryflag:    0
+Signflag:     0
+Zeroflag:     1
+Overflowflag: 0
+***********************
+sub 80 80
+Register A:   10000000
+Register B:   10000000
+Accumulator:  00000000
+Carryflag:    0
+Signflag:     0
+Zeroflag:     1
+Overflowflag: 1
+***********************
+neg_a ff
+Register A:   00000001
+Register B:   10000000
+Accumulator:  00000000
+Carryflag:    0
+Signflag:     0
+Zeroflag:     1
+Overflowflag: 1
+***********************
+neg_a 00
+Register A:   00000000
+Register B:   10000000
+Accumulator:  00000000
+Carryflag:    0
+Signflag:     0
+Zeroflag:     1
+Overflowflag: 1
+***********************
+neg_b 00
+Register A:   00000000
+Register B:   10000000
+Accumulator:  00000000
+Carryflag:    0
+Signflag:     0
+Zeroflag:     1
+Overflowflag: 1
+***********************
+neg_b ff
+Register A:   11111111
+Register B:   10000000
+Accumulator:  00000000
+Carryflag:    0
+Signflag:     0
+Zeroflag:     1
+Overflowflag: 1
+***********************
+neg_b 80
+Register A:   10000000
+Register B:   10000000
+Accumulator:  00000000
+Carryflag:    0
+Signflag:     0
+Zeroflag:     1
+Overflowflag: 1
+***********************
+Register A:   10000000
+Register B:   10000000
+Accumulator:  00000000
+Carryflag:    0
+Signflag:     0
+Zeroflag:     1
+Overflowflag: 1
+***********************
+or aa aa
+Register A:   10101010
+Register B:   10101010
+Accumulator:  10101010
+Carryflag:    0
+Signflag:     0
+Zeroflag:     1
+Overflowflag: 1
+***********************
+or ff 00
+Register A:   11111111
+Register B:   00000000
+Accumulator:  11111111
+Carryflag:    0
+Signflag:     0
+Zeroflag:     1
+Overflowflag: 1
+***********************
+or 00 ff
+Register A:   00000000
+Register B:   11111111
+Accumulator:  11111111
+Carryflag:    0
+Signflag:     0
+Zeroflag:     1
+Overflowflag: 1
+***********************
+and aa ff
+Register A:   10101010
+Register B:   11111111
+Accumulator:  10101010
+Carryflag:    0
+Signflag:     0
+Zeroflag:     1
+Overflowflag: 1
+***********************
+and 55 ff
+Register A:   01010101
+Register B:   11111111
+Accumulator:  01010101
+Carryflag:    0
+Signflag:     0
+Zeroflag:     1
+Overflowflag: 1
+***********************
+and aa 55
+Register A:   10101010
+Register B:   01010101
+Accumulator:  00000000
+Carryflag:    0
+Signflag:     0
+Zeroflag:     1
+Overflowflag: 1
+***********************
+xor 00 00
+Register A:   00000000
+Register B:   00000000
+Accumulator:  00000000
+Carryflag:    0
+Signflag:     0
+Zeroflag:     1
+Overflowflag: 1
+***********************
+xor ff ff
+Register A:   11111111
+Register B:   11111111
+Accumulator:  00000000
+Carryflag:    0
+Signflag:     0
+Zeroflag:     1
+Overflowflag: 1
+***********************
+xor af fa
+Register A:   10101111
+Register B:   11111010
+Accumulator:  01010101
+Carryflag:    0
+Signflag:     0
+Zeroflag:     1
+Overflowflag: 1
+***********************
+not_b ff
+Register A:   11111111
+Register B:   00000101
+Accumulator:  01010101
+Carryflag:    0
+Signflag:     0
+Zeroflag:     1
+Overflowflag: 1
+***********************
+not_a 00
+Register A:   11111111
+Register B:   00000101
+Accumulator:  01010101
+Carryflag:    0
+Signflag:     0
+Zeroflag:     1
+Overflowflag: 1
+***********************
+not_a f0
+Register A:   00001111
+Register B:   00000101
+Accumulator:  01010101
+Carryflag:    0
+Signflag:     0
+Zeroflag:     1
+Overflowflag: 1
+***********************
