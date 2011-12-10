@@ -1,7 +1,6 @@
 /*
-  memory.h
-*/
-
+ memory.h
+ */
 
 #define MEMORY_SIZE 65536 //Memory of 2^16 Memorycells
 //#define MEMORY_SIZE 32   //Testing Purpose

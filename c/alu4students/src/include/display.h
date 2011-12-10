@@ -1,15 +1,14 @@
 /*
-  display.h
-  bho1 - init 11.12.2009
-  GPL
+ display.h
+ bho1 - init 11.12.2009
+ GPL
 
-  simulating a graphic screen display
+ simulating a graphic screen display
 
-*/
+ */
 
 #ifndef _DISPLAY_H_
 #define _DISPLAY_H_
-
 
 void init_display();
 

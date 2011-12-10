@@ -1,6 +1,6 @@
 /*
  alu-opcodes.h
-*/
+ */
 #define ALU_OP_RESET 0
 #define ALU_OP_ADD 1
 #define ALU_OP_SUB 2

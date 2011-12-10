@@ -1,7 +1,7 @@
 /*
-  flags.h
-  bho1 26.11.2011
-*/
+ flags.h
+ bho1 26.11.2011
+ */
 
 void clearCarryflag(char flags[]);
 

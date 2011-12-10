@@ -2,3 +2,7 @@
 *.aux
 *.log
 *.synctex.gz
+.project
+.cproject
+Debug/
+*.o

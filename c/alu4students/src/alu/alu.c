@@ -1,18 +1,17 @@
-/* 
- alu.c
- - 21.11.05/BHO1
- bho1 29.12.2006
- bho1 6.12.2007
- bho1 30.11.2007 - clean up
- bho1 24.11.2009 - assembler instruction
- bho1 3.12.2009 - replaced adder with full_adder
- bho1 20.7.2011 - rewrite: minimize global vars, ALU-operations are modeled with ftc taking in/out register as parameter
- bho1 6.11.2011 - rewrite flags: adding flags as functional parameter. Now alu is truly a function
-
-
- GPL applies
-
- Simon Krenger
+/**
+ * alu.c
+ *
+ * bho1 29.12.2006
+ * bho1 6.12.2007
+ * bho1 30.11.2007 - clean up
+ * bho1 24.11.2009 - assembler instruction
+ * bho1 3.12.2009 - replaced adder with full_adder
+ * bho1 20.7.2011 - rewrite: minimize global vars, ALU-operations are modeled with ftc taking in/out register as parameter
+ * bho1 6.11.2011 - rewrite flags: adding flags as functional parameter. Now alu is truly a function
+ *
+ * GPL applies
+ *
+ * Simon Krenger
  */
 
 #include <stdio.h>
@@ -22,6 +21,9 @@
 #include "alu-opcodes.h"
 #include "register.h"
 #include "flags.h"
+
+#define ASCII_OFFSET 48
+
 int const max_mue_memory = 100;
 
 char mue_memory[100] = "100 Byte - this memory is at your disposal"; /*mue-memory */
@@ -29,11 +31,11 @@ char* m = mue_memory;
 
 unsigned int c = 0; /* carry bit address    */
 unsigned int s = 1; /* sum bit address      */
-unsigned int c_in = 2; /* carry in bit address */
+//unsigned int c_in = 2; /* carry in bit address */
 
-/*
- testet ob alle bits im akkumulator auf null gesetzt sind.
- Falls ja wird 1 returniert, ansonsten 0
+/**
+ * Checks if all bits in the accumulator are set to '0'.
+ * If this is the case, 1 is returned, else 0 is returned.
  */
 int zero_test(char accumulator[]) {
 	int i;
@@ -44,164 +46,264 @@ int zero_test(char accumulator[]) {
 	return 1;
 }
 
-/*
- Halfadder: addiert zwei character p,q und schreibt in
- den Mue-memory das summen-bit und das carry-bit.
+/**
+ * Half adder for two bits. Adds two character bits p,q
+ * and writes the sum-bit and the carry-bit into the
+ * mue-memory.
  */
 void half_adder(char p, char q) {
-	char _p = p - 48;
-	char _q = q - 48;
-	m[s] = (_p ^ _q) + 48;
-	m[c] = (_p & _q) + 48;
+	char _p = p - ASCII_OFFSET;
+	char _q = q - ASCII_OFFSET;
+	m[s] = (_p ^ _q) + ASCII_OFFSET;
+	m[c] = (_p & _q) + ASCII_OFFSET;
 }
 
-/* 
- void adder(char pbit, char qbit, char cbit)
- Adder oder auch Fulladder:
- Nimmt zwei character bits und ein carry-character-bit
- und schreibt das Resultat (summe, carry) in den Mue-speicher
+/**
+ * Full adder for two character bits and one carry-bit.
+ * Implemented with two half adders. The result is stored
+ * in the mue-memory (sum and carry).
  */
 void full_adder(char pbit, char qbit, char cbit) {
+	half_adder(pbit, qbit);
+	char c1 = m[c] - ASCII_OFFSET;
 
-
+	half_adder(m[s], cbit);
+	m[c] = (c1 | (m[c] - ASCII_OFFSET)) + ASCII_OFFSET;
 }
 
-/*
- Invertieren der Character Bits im Register reg
+/**
+ * Inversion of register "reg"
  */
 void one_complement(char reg[]) {
 	int i;
 	for (i = 0; reg[i] != '\0'; i++) {
-		if (reg[i] == '1')
-			reg[i] = '0';
-		else
-			reg[i] = '1';
+		reg[i] = (reg[i] == '1' ? '0' : '1');
 	}
 }
 
-/*
- Das zweier-Komplement des Registers reg wird in reg geschrieben
- reg := K2(reg)
+/**
+ * Calculates the two's complement for a register "reg"
+ * and stores the result in the register itself.
  */
 void two_complement(char reg[]) {
-	//your code here
+	one_complement(reg);
+
+	// Use this array to store the value '1'
+	char one[REG_WIDTH + 1];
+	one[REG_WIDTH] = '1';
+
+	// Before carrying out the addition, clear carry
+	m[c] = '0';
+
+	int i;
+	for (i = REG_WIDTH; i > 0; i--) {
+		full_adder(reg[i], one[i], m[c]);
+		reg[i] = m[s];
+	}
 }
 
-/*
- Die Werte in Register rega und Register regb werden addiert, das
- Resultat wird in Register accumulator geschrieben. Die Flags cflag,
- oflag, zflag und sflag werden entsprechend gesetzt
-
- accumulator := rega + regb
- */
-void op_add(char rega[], char regb[], char accumulator[], char flags[]) {
-	//your code here
-}
-
-/*
-
- ALU_OP_ADD_WITH_CARRY
-
- Die Werte des carry-Flags und der Register rega und
- Register regb werden addiert, das
- Resultat wird in Register accumulator geschrieben. Die Flags cflag,
- oflag, zflag und sflag werden entsprechend gesetzt
-
- accumulator := rega + regb + carry-flag
-
+/**
+ * ALU_OP_ADD_WITH_CARRY
+ * Adds the values of registers "rega" and "regb" and writes the result
+ * to register "accumulator". The carry-flag is checked. After the operation,
+ * the Carry-Flag, Overflow-Flag, Zero-Flag and Sign-Flag are set accordingly.
+ *
+ * accumulator := rega + regb + carry-flag
  */
 void op_addc(char rega[], char regb[], char accumulator[], char flags[]) {
-	//your code here
+	int i;
+
+	m[c] = getCarryflag(flags);
+
+	for (i = REG_WIDTH; i > 0; i--) {
+		full_adder(rega[i], regb[i], m[c]);
+		accumulator[i] = m[s];
+	}
+
+	// After, check
+	if (m[c] == '1')
+		setCarryflag(flags);
+	else
+		clearCarryflag(flags);
+
+	char a = rega[0] - ASCII_OFFSET;
+	char b = regb[0] - ASCII_OFFSET;
+	char c = accumulator[0] - ASCII_OFFSET;
+
+	if (((a & b & !c) | (!a & !b & c)) + ASCII_OFFSET == '1')
+		setOverflowflag(flags);
+	else
+		clearOverflowflag(flags);
+
+	if (accumulator[0] == '1')
+		setSignflag(flags);
+	else
+		clearSignflag(flags);
 }
 
-/*
- Die Werte in Register rega und Register regb werden subtrahiert, das
- Resultat wird in Register accumulator geschrieben. Die Flags cflag,
- oflag, zflag und sflag werden entsprechend gesetzt
+/**
+ * ALU_OP_ADD
+ *
+ * Adds the values of registers "rega" and "regb" and stores the result of
+ * the operation in register "accumulator". The carry-flag is ignored.
+ * After the operation, the Carry-Flag, Overflow-Flag, Zero-Flag and
+ * Sign-Flag are set accordingly.
+ *
+ * accumulator := rega + regb
+ */
+void op_add(char rega[], char regb[], char accumulator[], char flags[]) {
+	clearCarryflag(flags);
+	op_addc(rega, regb, accumulator, flags);
+}
 
- accumulator := rega - regb
+/**
+ * ALU_OP_SUB
+ *
+ * Subtracts the register "regb" from "rega", the result is then stored
+ * in the register "accumulator". After the operation, the Carry-Flag,
+ * Overflow-Flag, Zero-Flag and Sign-Flag are set accordingly.
+ *
+ * accumulator := rega - regb
  */
 void op_sub(char rega[], char regb[], char accumulator[], char flags[]) {
-	//your code here
+	two_complement(regb);
+
+	clearCarryflag(flags);
+	op_addc(rega, regb, accumulator, flags);
+
+	// Invert carry flag
+	if (getCarryflag(flags) == '1')
+		clearCarryflag(flags);
+	else
+		setCarryflag(flags);
 }
 
-/*
- Die Werte in Register rega und Register regb werden logisch geANDet, das
- Resultat wird in Register accumulator geschrieben. Die Flags cflag,
- oflag, zflag und sflag werden entsprechend gesetzt
-
- accumulator := rega AND regb
+/**
+ * ALU_OP_AND
+ *
+ * Performs a logical AND of the registers "rega" and "regb". The result
+ * is then stored in the register "accumulator". The Zero-Flag is set
+ * accordingly.
+ *
+ * accumulator := rega AND regb
  */
 void op_and(char rega[], char regb[], char accumulator[], char flags[]) {
-	//your code here
-}
-/*
- Die Werte in Register rega und Register regb werden logisch geORt, das
- Resultat wird in Register accumulator geschrieben. Die Flags cflag,
- oflag, zflag und sflag werden entsprechend gesetzt
+	int i;
+	for (i = 0; i < REG_WIDTH; i++) {
+		accumulator[i] = ((rega[i] - ASCII_OFFSET) & (regb[i] - ASCII_OFFSET))
+				+ ASCII_OFFSET;
+	}
 
- accumulator := rega OR regb
+	// Set Carry Flag
+	if (zero_test(accumulator))
+		setZeroflag(flags);
+	else
+		clearCarryflag(flags);
+}
+
+/**
+ * ALU_OP_OR
+ *
+ * Performs a logical OR of the registers "rega" and "regb". The result
+ * is then stored in the register "accumulator". The Zero-Flag is set
+ * accordingly.
+ *
+ * accumulator := rega OR regb
  */
 void op_or(char rega[], char regb[], char accumulator[], char flags[]) {
-	//your code here
-}
-/*
- Die Werte in Register rega und Register regb werden logisch geXORt, das
- Resultat wird in Register accumulator geschrieben. Die Flags cflag,
- oflag, zflag und sflag werden entsprechend gesetzt
+	int i;
+	for (i = 0; i < REG_WIDTH; i++) {
+		accumulator[i] = ((rega[i] - ASCII_OFFSET) | (regb[i] - ASCII_OFFSET))
+				+ ASCII_OFFSET;
+	}
 
- accumulator := rega XOR regb
+	// Set Carry Flag
+	if (zero_test(accumulator))
+		setZeroflag(flags);
+	else
+		clearCarryflag(flags);
+}
+
+/**
+ * ALU_OP_XOR
+ *
+ * Performs a logical XOR of the registers "rega" and "regb". The result
+ * is then stored in the register "accumulator". The Zero-Flag is set
+ * accordingly.
+ *
+ * accumulator := rega XOR regb
  */
 void op_xor(char rega[], char regb[], char accumulator[], char flags[]) {
-	//your code here
+	int i;
+	for (i = 0; i < REG_WIDTH; i++) {
+		accumulator[i] = ((rega[i] - ASCII_OFFSET) ^ (regb[i] - ASCII_OFFSET))
+				+ ASCII_OFFSET;
+	}
+
+	// Set Carry Flag
+	if (zero_test(accumulator))
+		setZeroflag(flags);
+	else
+		clearCarryflag(flags);
 }
 
-/*
- Einer-Komplement von Register rega
- rega := not(rega)
+/**
+ * ALU_OP_NOT_A
+ *
+ * Calculates the inversion of register A ("rega")
+ *
+ * rega := NOT(rega)
  */
 void op_not_a(char rega[], char regb[], char accumulator[], char flags[]) {
-	//your code here
+	one_complement(rega);
 }
 
-/* Einer Komplement von Register regb */
+/**
+ * ALU_OP_NOT_B
+ *
+ * Calculates the inversion of register B ("regb")
+ *
+ * regb := NOT(regb)
+ */
 void op_not_b(char rega[], char regb[], char accumulator[], char flags[]) {
-	//your code here
+	one_complement(regb);
 }
 
-/*
- Negation von Register rega
- rega := -rega
+/**
+ * ALU_OP_NEG_A
+ *
+ * Negates the contents of register A ("rega")
+ *
+ * rega := -rega
  */
 void op_neg_a(char rega[], char regb[], char accumulator[], char flags[]) {
-	//your code here
+	two_complement(rega);
 }
 
-/*
- Negation von Register regb
- regb := -regb
+/**
+ * ALU_OP_NEG_B
+ *
+ * Negates the contents of register B ("regb")
+ *
+ * regb := -regb
  */
 void op_neg_b(char rega[], char regb[], char accumulator[], char flags[]) {
-	//your code here
+	two_complement(regb);
 }
 
-/*
- clear mue_memory
+/**
+ * Clear mue_memory
  */
 void alu_reset() {
 	int i;
-
 	for (i = 0; i < max_mue_memory; i++)
 		m[i] = '0';
 }
 
-/*
- alu function
- Needed register are already alocated and may be modified
- mainly a switchboard
-
- alu_fct(int opcode, char reg_in_a[], char reg_in_b[], char reg_out_accu[], char flags[])
-
+/**
+ * ALU function
+ * Needed registers are already allocated and may be modified.
+ * This function implements a kind of switchboard
  */
 void alu(unsigned int alu_opcode, char reg_in_a[], char reg_in_b[],
 		char reg_out_accu[], char flags[]) {
@@ -241,7 +343,7 @@ void alu(unsigned int alu_opcode, char reg_in_a[], char reg_in_b[],
 		alu_reset();
 		break;
 	default:
-		printf("ALU(%i): Invalide operation %i selected", alu_opcode,
+		printf("ALU(%i): Invalid operation %i selected", alu_opcode,
 				alu_opcode);
 		break;
 	}

@@ -1,15 +1,16 @@
-/*
- alu-main.c
- bho1 2006; bho1 19.11.2006; bho1 8.12.2007
- bho1 29.11.2007 : init value for rega, regb, accu. flags to full 16 Bit
- bho1 19.11.2009 : corrected error with neg_b calling neg_a
- bho1 10.12.2009 : corrected error where neg_b and not_b loaded arg into rega
- bho1 5.7.2011
- renamed alu_exec_line to alu_parse_line
- bho1 10.10.2011
- functional appoach: alu(ALU_OP_CODE, rega, regb, accumulator, flags);
- GPL
+/**
+ * alu-main.c
+ *
+ * bho1 2006; bho1 19.11.2006; bho1 8.12.2007
+ * bho1 29.11.2007 : init value for rega, regb, accu. flags to full 16 Bit
+ * bho1 19.11.2009 : corrected error with neg_b calling neg_a
+ * bho1 10.12.2009 : corrected error where neg_b and not_b loaded arg into rega
+ * bho1 05.07.2011 : renamed alu_exec_line to alu_parse_line
+ * bho1 10.10.2011 : functional appoach: alu(ALU_OP_CODE, rega, regb, accumulator, flags);
+ *
+ * GPL
  */
+
 #define _GNU_SOURCE
 
 #include <stdio.h>

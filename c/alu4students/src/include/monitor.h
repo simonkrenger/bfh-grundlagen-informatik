@@ -1,12 +1,11 @@
 /*
-  monitor.h
-  bho1 - init 11.12.2009
-  GPL
-*/
+ monitor.h
+ bho1 - init 11.12.2009
+ GPL
+ */
 
 #ifndef _MONITOR_H_
 #define _MONITOR_H_
-
 
 void monitor();
 

@@ -1,15 +1,14 @@
 /*
-  vc.h
-  bho1 - init 8.7.2011
-  GPL
+ vc.h
+ bho1 - init 8.7.2011
+ GPL
 
-  simulating a video chip
+ simulating a video chip
 
-*/
+ */
 
 #ifndef _VC_H_
 #define _VC_H_
-
 
 void draw_memory(char* adr[]);
 
