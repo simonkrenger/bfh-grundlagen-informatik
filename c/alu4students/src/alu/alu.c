@@ -52,8 +52,8 @@ int zero_test(char accumulator[]) {
  * mue-memory.
  */
 void half_adder(char p, char q) {
-	char _p = p - ASCII_OFFSET;
-	char _q = q - ASCII_OFFSET;
+	char _p = p & 1;
+	char _q = q & 1;
 	m[s] = (_p ^ _q) + ASCII_OFFSET;
 	m[c] = (_p & _q) + ASCII_OFFSET;
 }
@@ -76,7 +76,7 @@ void full_adder(char pbit, char qbit, char cbit) {
  */
 void one_complement(char reg[]) {
 	int i;
-	for (i = 0; reg[i] != '\0'; i++) {
+	for (i = 0; i < REG_WIDTH; i++) {
 		reg[i] = (reg[i] == '1' ? '0' : '1');
 	}
 }
@@ -91,16 +91,13 @@ void two_complement(char reg[]) {
 
 	one_complement(reg);
 
-	// Use this array to store the value '1'
-	char one[REG_WIDTH + 1];
-	one[REG_WIDTH] = '1';
+	// Since we need to add 1, use the carry-flag
+	m[c] = '1';
 
-	// Before carrying out the addition, clear carry
-	m[c] = '0';
-
+	// Then, we basically add 0 (but remember m[c]!)
 	int i;
-	for (i = REG_WIDTH; i > 0; i--) {
-		full_adder(reg[i], one[i], m[c]);
+	for (i = REG_WIDTH - 1; i >= 0; i--) {
+		full_adder(reg[i], '0', m[c]);
 		reg[i] = m[s];
 	}
 }
@@ -131,9 +128,9 @@ void op_addc(char rega[], char regb[], char accumulator[], char flags[]) {
 	}
 
 	// Convert bits to binary 1 and 0 (for bit arithmetics)
-	char a = rega[0] - ASCII_OFFSET;
-	char b = regb[0] - ASCII_OFFSET;
-	char c = accumulator[0] - ASCII_OFFSET;
+	char a = rega[0] & 1;
+	char b = regb[0] & 1;
+	char c = accumulator[0] & 1;
 
 	if (((a & b & !c) | (!a & !b & c)) + ASCII_OFFSET == '1') {
 		setOverflowflag(flags);
@@ -182,7 +179,7 @@ void op_sub(char rega[], char regb[], char accumulator[], char flags[]) {
 	// Subtraction is acc := rega + two_complement(regb)
 	two_complement(regb);
 
-	clearCarryflag(flags);
+	//clearCarryflag(flags);
 	op_addc(rega, regb, accumulator, flags);
 
 	// Invert carry flag
@@ -251,7 +248,7 @@ void op_or(char rega[], char regb[], char accumulator[], char flags[]) {
 void op_xor(char rega[], char regb[], char accumulator[], char flags[]) {
 	int i;
 	for (i = 0; i < REG_WIDTH; i++) {
-		accumulator[i] = ((rega[i] - ASCII_OFFSET) ^ (regb[i] - ASCII_OFFSET))
+		accumulator[i] = ((rega[i] & 1) ^ (regb[i] & 1))
 				+ ASCII_OFFSET;
 	}
 
