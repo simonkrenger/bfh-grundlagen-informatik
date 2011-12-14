@@ -75,11 +75,11 @@ void alu_parse_line(char *cmd_line) {
 		if (!strcmp(opcode, "neg_a"))
 			alu(ALU_OP_NEG_A, rega, regb, accumulator, flags);
 		if (!strcmp(opcode, "neg_b"))
-			alu(ALU_OP_NEG_B, rega, regb, accumulator, flags);
+			alu(ALU_OP_NEG_B, rega, rega, accumulator, flags);
 		if (!strcmp(opcode, "not_a"))
 			alu(ALU_OP_NOT_A, rega, regb, accumulator, flags);
 		if (!strcmp(opcode, "not_b"))
-			alu(ALU_OP_NOT_B, rega, regb, accumulator, flags);
+			alu(ALU_OP_NOT_B, rega, rega, accumulator, flags);
 		printf("%s %s\n", opcode, operand1);
 		break;
 	case 1:

@@ -65,10 +65,10 @@ void half_adder(char p, char q) {
  */
 void full_adder(char pbit, char qbit, char cbit) {
 	half_adder(pbit, qbit);
-	char c1 = m[c] - ASCII_OFFSET;
+	char c1 = m[c] & 1;
 
 	half_adder(m[s], cbit);
-	m[c] = (c1 | (m[c] - ASCII_OFFSET)) + ASCII_OFFSET;
+	m[c] = (c1 | (m[c] & 1)) + ASCII_OFFSET;
 }
 
 /**
@@ -120,13 +120,10 @@ void op_addc(char rega[], char regb[], char accumulator[], char flags[]) {
 		accumulator[i] = m[s];
 	}
 
-	// After, check flags
-	if (m[c] == '1') {
-		setCarryflag(flags);
-	} else {
-		clearCarryflag(flags);
-	}
+	// Carry flag
+	m[c] == '1' ? setCarryflag(flags) : clearCarryflag(flags);
 
+	// Overflow flag
 	// Convert bits to binary 1 and 0 (for bit arithmetics)
 	char a = rega[0] & 1;
 	char b = regb[0] & 1;
@@ -138,17 +135,11 @@ void op_addc(char rega[], char regb[], char accumulator[], char flags[]) {
 		clearOverflowflag(flags);
 	}
 
-	if (accumulator[0] == '1') {
-		setSignflag(flags);
-	} else {
-		clearSignflag(flags);
-	}
+	// Sign flag
+	c ? setSignflag(flags) : clearSignflag(flags);
 
-	if (zero_test(accumulator)) {
-		setZeroflag(flags);
-	} else {
-		clearZeroflag(flags);
-	}
+	// Zero flag
+	zero_test(accumulator) ? setZeroflag(flags) : clearZeroflag(flags);
 }
 
 /**
@@ -179,15 +170,13 @@ void op_sub(char rega[], char regb[], char accumulator[], char flags[]) {
 	// Subtraction is acc := rega + two_complement(regb)
 	two_complement(regb);
 
-	//clearCarryflag(flags);
+	clearCarryflag(flags);
 	op_addc(rega, regb, accumulator, flags);
 
-	// Invert carry flag
-	if (getCarryflag(flags) == '1') {
-		clearCarryflag(flags);
-	} else {
-		setCarryflag(flags);
-	}
+	// Carry flag
+	// Attention: Invert carry flag
+	getCarryflag(flags) == '1' ? clearCarryflag(flags) : setCarryflag(flags);
+
 }
 
 /**
@@ -202,15 +191,14 @@ void op_sub(char rega[], char regb[], char accumulator[], char flags[]) {
 void op_and(char rega[], char regb[], char accumulator[], char flags[]) {
 	int i;
 	for (i = 0; i < REG_WIDTH; i++) {
-		accumulator[i] = ((rega[i] - ASCII_OFFSET) & (regb[i] - ASCII_OFFSET))
-				+ ASCII_OFFSET;
+		accumulator[i] = ((rega[i] & 1) & (regb[i] & 1)) + ASCII_OFFSET;
 	}
 
-	if (zero_test(accumulator)) {
-		setZeroflag(flags);
-	} else {
-		clearZeroflag(flags);
-	}
+	// Zero flag
+	zero_test(accumulator) ? setZeroflag(flags) : clearZeroflag(flags);
+
+	// Sign flag
+	accumulator[0] == '1' ? setSignflag(flags) : clearSignflag(flags);
 }
 
 /**
@@ -225,15 +213,14 @@ void op_and(char rega[], char regb[], char accumulator[], char flags[]) {
 void op_or(char rega[], char regb[], char accumulator[], char flags[]) {
 	int i;
 	for (i = 0; i < REG_WIDTH; i++) {
-		accumulator[i] = ((rega[i] - ASCII_OFFSET) | (regb[i] - ASCII_OFFSET))
-				+ ASCII_OFFSET;
+		accumulator[i] = ((rega[i] & 1) | (regb[i] & 1)) + ASCII_OFFSET;
 	}
 
-	if (zero_test(accumulator)) {
-		setZeroflag(flags);
-	} else {
-		clearZeroflag(flags);
-	}
+	// Zero flag
+	zero_test(accumulator) ? setZeroflag(flags) : clearZeroflag(flags);
+
+	// Sign flag
+	accumulator[0] == '1' ? setSignflag(flags) : clearSignflag(flags);
 }
 
 /**
@@ -248,15 +235,14 @@ void op_or(char rega[], char regb[], char accumulator[], char flags[]) {
 void op_xor(char rega[], char regb[], char accumulator[], char flags[]) {
 	int i;
 	for (i = 0; i < REG_WIDTH; i++) {
-		accumulator[i] = ((rega[i] & 1) ^ (regb[i] & 1))
-				+ ASCII_OFFSET;
+		accumulator[i] = ((rega[i] & 1) ^ (regb[i] & 1)) + ASCII_OFFSET;
 	}
 
-	if (zero_test(accumulator)) {
-		setZeroflag(flags);
-	} else {
-		clearZeroflag(flags);
-	}
+	// Zero flag
+	zero_test(accumulator) ? setZeroflag(flags) : clearZeroflag(flags);
+
+	// Sign flag
+	accumulator[0] == '1' ? setSignflag(flags) : clearSignflag(flags);
 }
 
 /**
