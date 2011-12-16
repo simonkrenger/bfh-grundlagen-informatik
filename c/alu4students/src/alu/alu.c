@@ -129,11 +129,8 @@ void op_addc(char rega[], char regb[], char accumulator[], char flags[]) {
 	char b = regb[0] & 1;
 	char c = accumulator[0] & 1;
 
-	if (((a & b & !c) | (!a & !b & c)) + ASCII_OFFSET == '1') {
-		setOverflowflag(flags);
-	} else {
-		clearOverflowflag(flags);
-	}
+	(((a & b & !c) | (!a & !b & c))) ?
+			setOverflowflag(flags) : clearOverflowflag(flags);
 
 	// Sign flag
 	c ? setSignflag(flags) : clearSignflag(flags);
@@ -170,8 +167,7 @@ void op_sub(char rega[], char regb[], char accumulator[], char flags[]) {
 	// Subtraction is acc := rega + two_complement(regb)
 	two_complement(regb);
 
-	clearCarryflag(flags);
-	op_addc(rega, regb, accumulator, flags);
+	op_add(rega, regb, accumulator, flags);
 
 	// Carry flag
 	// Attention: Invert carry flag
