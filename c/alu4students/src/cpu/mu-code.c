@@ -146,7 +146,7 @@ void cpu_6502_lda_absolute_y(struct cpu6502 *cpu) {
 	op_addc(cpu->idy, low_byte, cpu->acc, cpu->flags);
 	cp_register(cpu->acc, low_byte);
 	if (getCarryflag(cpu->flags) == '1') {
-		high_byte++;
+		op_add("00000001", high_byte, high_byte, cpu->flags);
 	}
 
 	// Write the now modified address to address bus
@@ -194,8 +194,55 @@ void cpu_6502_lda_index_ind(struct cpu6502 *cpu) {
 	char low_byte;
 	cp_register(cpu->dbr, &low_byte);
 
-	// TODO
+	// Add X to address
+	op_addc(cpu->idx, low_byte, cpu->acc, cpu->flags);
+	cp_register(cpu->acc, low_byte);
 
-	// Do not forget flags
+	char high_byte[REG_WIDTH + 1] = "00000000";
+	if (getCarryflag(cpu->flags) == '1') {
+		op_add("00000001", high_byte, high_byte, cpu->flags);
+	}
 
+	// Get low byte
+	cp_register(low_byte, cpu->abrl);
+	cp_register(high_byte, cpu->abrh);
+
+	set_rw2read();
+	access_memory();
+
+	cp_register(cpu->dbr, low_byte);
+
+	// Get high byte
+	inc_pc();
+	cp_register(cpu->pcl, cpu->abrl);
+	cp_register(cpu->pch, cpu->abrh);
+
+	set_rw2read();
+	access_memory();
+
+	// Now get the actual value
+	cp_register(cpu->dbr, cpu->abrh);
+	cp_register(low_byte, cpu->abrl);
+
+	set_rw2read();
+	access_memory();
+
+	cp_register(cpu->dbr, cpu->acc);
+
+	// Set flags
+	if (cpu->acc == '1')
+		setSignflag(cpu->flags);
+	else
+		clearSignflag(cpu->flags);
+
+	int i;
+	setZeroflag(cpu->flags);
+	for (i = 0; i < REG_WIDTH; i++) {
+		if (cpu->acc[i] == '1') {
+			clearZeroflag(cpu->flags);
+			break;
+		}
+	}
+
+	inc_pc();
 }
