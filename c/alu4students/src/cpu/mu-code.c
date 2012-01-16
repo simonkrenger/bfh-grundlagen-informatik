@@ -88,8 +88,8 @@ void cpu_6502_lda_absolute(struct cpu6502 *cpu) {
 	access_memory();
 
 	// Set the address
-	cp_register(cpu->dbr, cpu->abrl);
-	cp_register(&low_byte, cpu->abrh);
+	cp_register(cpu->dbr, cpu->abrh);
+	cp_register(&low_byte, cpu->abrl);
 
 	set_rw2read();
 	access_memory();
@@ -97,6 +97,21 @@ void cpu_6502_lda_absolute(struct cpu6502 *cpu) {
 	// Actually get the byte
 	cp_register(cpu->dbr, cpu->acc);
 
+	if (cpu->acc == '1')
+		setSignflag(cpu->flags);
+	else
+		clearSignflag(cpu->flags);
+
+	int i;
+	setZeroflag(cpu->flags);
+	for (i = 0; i < REG_WIDTH; i++) {
+		if (cpu->acc[i] == '1') {
+			clearZeroflag(cpu->flags);
+			break;
+		}
+	}
+
+	inc_pc();
 }
 
 /**
@@ -127,9 +142,38 @@ void cpu_6502_lda_absolute_y(struct cpu6502 *cpu) {
 	char high_byte;
 	cp_register(cpu->dbr, &high_byte);
 
-	// Add Y to address and fetch byte
-	// TODO
+	// Add Y to address
+	op_addc(cpu->idy, low_byte, cpu->acc, cpu->flags);
+	cp_register(cpu->acc, low_byte);
+	if (getCarryflag(cpu->flags) == '1') {
+		high_byte++;
+	}
 
+	// Write the now modified address to address bus
+	cp_register(high_byte, cpu->abrh);
+	cp_register(low_byte, cpu->abrl);
+
+	// Read from address bus
+	set_rw2read();
+	access_memory();
+	cp_register(cpu->dbr, cpu->acc);
+
+	// Set flags
+	if (cpu->acc == '1')
+		setSignflag(cpu->flags);
+	else
+		clearSignflag(cpu->flags);
+
+	int i;
+	setZeroflag(cpu->flags);
+	for (i = 0; i < REG_WIDTH; i++) {
+		if (cpu->acc[i] == '1') {
+			clearZeroflag(cpu->flags);
+			break;
+		}
+	}
+
+	inc_pc();
 }
 
 /**
@@ -151,5 +195,7 @@ void cpu_6502_lda_index_ind(struct cpu6502 *cpu) {
 	cp_register(cpu->dbr, &low_byte);
 
 	// TODO
+
+	// Do not forget flags
 
 }
