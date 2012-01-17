@@ -79,7 +79,7 @@ void cpu_6502_lda_imm(struct cpu6502 *cpu) {
  */
 void cpu_6502_lda_absolute(struct cpu6502 *cpu) {
 
-	// Get low byte (Current PC)
+	// Get low byte
 	cp_register(cpu->pcl, cpu->abrl);
 	cp_register(cpu->pch, cpu->abrh);
 
@@ -157,16 +157,10 @@ void cpu_6502_lda_absolute_y(struct cpu6502 *cpu) {
 	cp_register(cpu->dbr, &high_byte);
 
 	// Add Y to address (low byte first)
-	op_add(cpu->idy, low_byte, cpu->acc, cpu->flags);
-	cp_register(cpu->acc, low_byte);
-
-	// Add Y to address (high byte)
-	op_addc("00000000", high_byte, cpu->acc, cpu->flags);
-	cp_register(cpu->acc, high_byte);
-
-	// Write the now modified address to address bus
-	cp_register(high_byte, cpu->abrh);
-	cp_register(low_byte, cpu->abrl);
+	// Directly write the results into the address bus registers
+	op_add(cpu->idy, low_byte, cpu->abrl, cpu->flags);
+	if(getCarryflag(cpu->flags) == '1')
+		op_addc("00000000", high_byte, cpu->abrh, cpu->flags);
 
 	// Read from address bus
 	set_rw2read();
@@ -212,20 +206,16 @@ void cpu_6502_lda_index_ind(struct cpu6502 *cpu) {
 	char low_byte[REG_WIDTH + 1];
 	cp_register(cpu->dbr, &low_byte);
 
-	// Add X to address
-	op_add(cpu->idx, low_byte, cpu->acc, cpu->flags);
-	cp_register(cpu->acc, low_byte);
+	// Add X to address, write results directly to address bus registers
+	op_add(cpu->idx, low_byte, cpu->abrl, cpu->flags);
 
 	char high_byte[REG_WIDTH + 1] = "00000000";
-	op_addc("00000000", high_byte, cpu->acc, cpu->flags);
-	cp_register(cpu->acc, low_byte);
+	if(getCarryflag(cpu->flags) == '1')
+		op_addc("00000000", high_byte, cpu->abrh, cpu->flags);
 
 	// At this point, we have the address of the address
 
 	// Get low byte of address
-	cp_register(low_byte, cpu->abrl);
-	cp_register(high_byte, cpu->abrh);
-
 	set_rw2read();
 	access_memory();
 
