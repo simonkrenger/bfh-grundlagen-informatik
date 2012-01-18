@@ -209,13 +209,11 @@ void cpu_6502_lda_index_ind(struct cpu6502 *cpu) {
 	cp_register(cpu->dbr, &low_byte);
 
 	// Add X to address, write results directly to address bus registers
+	// Pay attention to zero page wrap around
 	op_add(cpu->idx, low_byte, cpu->abrl, cpu->flags);
 
 	char high_byte[REG_WIDTH + 1] = "00000000";
-	if(getCarryflag(cpu->flags) == '1')
-		op_addc("00000000", high_byte, cpu->abrh, cpu->flags);
-	else
-		cp_register(&high_byte, cpu->abrh);
+	cp_register(&high_byte, cpu->abrh);
 
 	// At this point, we have the address of the address
 
@@ -225,10 +223,11 @@ void cpu_6502_lda_index_ind(struct cpu6502 *cpu) {
 
 	cp_register(cpu->dbr, low_byte);
 
-	// Get high byte of address
-	inc_pc();
-	cp_register(cpu->pcl, cpu->abrl);
-	cp_register(cpu->pch, cpu->abrh);
+	// Get high byte of address (+1)
+	// Note that we need to calculate this
+	op_add("00000001", cpu->abrl, cpu->abrl, cpu->flags);
+	if(getCarryflag(cpu->flags) == '1')
+		op_addc("00000000", cpu->abrh, cpu->abrh, cpu->flags);
 
 	set_rw2read();
 	access_memory();
