@@ -1,7 +1,7 @@
 /*
  * mu-code.c
  *
- * Last change: Jan 17, 2012
+ * Last change: Jan 18, 2012
  *      Author: Simon Krenger <krens1@bfh.ch>
  */
 #include <stdio.h>
@@ -153,7 +153,7 @@ void cpu_6502_lda_absolute_y(struct cpu6502 *cpu) {
 	set_rw2read();
 	access_memory();
 
-	char high_byte[REG_WIDTH + 1];
+	char high_byte[REG_WIDTH + 1] = "00000000";
 	cp_register(cpu->dbr, &high_byte);
 
 	// Add Y to address (low byte first)
@@ -161,6 +161,8 @@ void cpu_6502_lda_absolute_y(struct cpu6502 *cpu) {
 	op_add(cpu->idy, low_byte, cpu->abrl, cpu->flags);
 	if(getCarryflag(cpu->flags) == '1')
 		op_addc("00000000", high_byte, cpu->abrh, cpu->flags);
+	else
+		cp_register(&high_byte, cpu->abrh);
 
 	// Read from address bus
 	set_rw2read();
@@ -212,6 +214,8 @@ void cpu_6502_lda_index_ind(struct cpu6502 *cpu) {
 	char high_byte[REG_WIDTH + 1] = "00000000";
 	if(getCarryflag(cpu->flags) == '1')
 		op_addc("00000000", high_byte, cpu->abrh, cpu->flags);
+	else
+		cp_register(&high_byte, cpu->abrh);
 
 	// At this point, we have the address of the address
 
